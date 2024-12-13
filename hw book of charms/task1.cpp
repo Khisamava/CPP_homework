@@ -1,4 +1,5 @@
-﻿#include <iostream>
+#include <iostream>
+#include <string>
 
 class Spells_level_1 // заклинания первого уровня
 {
@@ -147,112 +148,243 @@ public:
 };
 
 
-class Book_of_Charm // Книга заклинаний
+class SpellBuilder 
 {
 public:
-	virtual Spells_level_1* WriteSpell1() const = 0; // Функция для создание 1-уровневых заклинаний 
-	virtual Spells_level_2* WriteSpell2() const = 0; // Функция для создание 2-уровневых заклинаний 
-	virtual Spells_level_3* WriteSpell3() const = 0; // Функция для создание 3-уровневых заклинаний 
- 
+	virtual ~SpellBuilder() {}
+
+	///методы для заклинаний каждого уровня
+	virtual void buildLevel1Spell() = 0;
+	virtual void buildLevel2Spell() = 0;
+	virtual void buildLevel3Spell() = 0;
+
+	virtual Spells_level_1* getLevel1Spell() = 0;
+    virtual Spells_level_2* getLevel2Spell() = 0;
+    virtual Spells_level_3* getLevel3Spell() = 0;
 };
 
-template<class Singleton> 
-Singleton* GetSpellInstance() // Функция синглтон для щаблонных классов
-{
-	static Singleton* singleton = NULL;
-	if (!singleton) singleton = new Singleton();
-	return singleton;
-}
+// Конкретный строитель для создания атакующих заклинаний
+class AttackSpellBuilder : public SpellBuilder {
+private:
+    Spells_level_1* spell1;
+    Spells_level_2* spell2;
+    Spells_level_3* spell3;
 
-template< class S1, class S2, class S3, class S4 > // Шаблонный класс создания заклинаний
-class Four_Types_of_Marmelad : public Book_of_Marmelad
-{
 public:
-	Spells_level_1* WriteSpell1() const override
-	{
-		return GetSpellInstance<S1>(); // Если заклинание еще не созданно то создаем
-	}
-	Spells_level_2* WriteSpell2() const override
-	{
-		return GetSpellInstance<S2>(); // Если заклинание еще не созданно то создаем
-	}
-	Spells_level_3* WriteSpell3() const override
-	{
-		return GetSpellInstance<S3>(); // Если заклинание еще не созданно то создаем
-	}
-	
+    AttackSpellBuilder() : spell1(nullptr), spell2(nullptr), spell3(nullptr) {}
+
+    void buildLevel1Spell() override {
+        spell1 = new Expelliarmus();
+    }
+
+    void buildLevel2Spell() override {
+        spell2 = new Bombarda();
+    }
+
+    void buildLevel3Spell() override {
+        spell3 = new Riddikulus();
+    }
+
+    Spells_level_1* getLevel1Spell() override {
+        return spell1;
+    }
+
+    Spells_level_2* getLevel2Spell() override {
+        return spell2;
+    }
+
+    Spells_level_3* getLevel3Spell() override {
+        return spell3;
+    }
+
+    ~AttackSpellBuilder() {
+        delete spell1;
+        delete spell2;
+        delete spell3;
+    }
 };
 
-typedef Four_Types_of_Charm<Expelliarmus, Bombarda, Riddikulus> Attack_Spells;           // класс атакующих
-typedef Four_Types_of_Charm<Protego, Protego_Diabolica, Expecto_Patronum> Protection_Spells; // класс защитных
-typedef Four_Types_of_Charm<Wingardium_Leviosa, Lumos, Nox> Casual_Spells;                        // класс повседневных
-typedef Four_Types_of_Charm<Crucio, Imperio, Avada_Kedavra> Unforgivable_Spells;            // класс непростительных
+
+// Конкретный строитель для защитных заклинаний
+class ProtectionSpellBuilder : public SpellBuilder {
+private:
+    Spells_level_1* spell1;
+    Spells_level_2* spell2;
+    Spells_level_3* spell3;
+
+public:
+    ProtectionSpellBuilder() : spell1(nullptr), spell2(nullptr), spell3(nullptr) {}
+
+    void buildLevel1Spell() override {
+        spell1 = new Protego();
+    }
+
+    void buildLevel2Spell() override {
+        spell2 = new Protego_Diabolica();
+    }
+
+    void buildLevel3Spell() override {
+        spell3 = new Expecto_Patronum();
+    }
+
+    Spells_level_1* getLevel1Spell() override {
+        return spell1;
+    }
+
+    Spells_level_2* getLevel2Spell() override {
+        return spell2;
+    }
+
+    Spells_level_3* getLevel3Spell() override {
+        return spell3;
+    }
+
+    ~ProtectionSpellBuilder() {
+        delete spell1;
+        delete spell2;
+        delete spell3;
+    }
+};
+
+// Конкретный строитель для повседневных заклинаний
+class CasualSpellBuilder : public SpellBuilder {
+private:
+    Spells_level_1* spell1;
+    Spells_level_2* spell2;
+    Spells_level_3* spell3;
+
+public:
+    CasualSpellBuilder() : spell1(nullptr), spell2(nullptr), spell3(nullptr) {}
+
+    void buildLevel1Spell() override {
+        spell1 = new Wingardium_Leviosa();
+    }
+
+    void buildLevel2Spell() override {
+        spell2 = new Lumos();
+    }
+
+    void buildLevel3Spell() override {
+        spell3 = new Nox();
+    }
+
+    Spells_level_1* getLevel1Spell() override {
+        return spell1;
+    }
+
+    Spells_level_2* getLevel2Spell() override {
+        return spell2;
+    }
+
+    Spells_level_3* getLevel3Spell() override {
+        return spell3;
+    }
+
+    ~CasualSpellBuilder() {
+        delete spell1;
+        delete spell2;
+        delete spell3;
+    }
+};
+
+// Конкретный строитель для непростительных заклинаний
+class UnforgivableSpellBuilder : public SpellBuilder {
+private:
+    Spells_level_1* spell1;
+    Spells_level_2* spell2;
+    Spells_level_3* spell3;
+
+public:
+    UnforgivableSpellBuilder() : spell1(nullptr), spell2(nullptr), spell3(nullptr) {}
+
+    void buildLevel1Spell() override {
+        spell1 = new Crucio();
+    }
+
+    void buildLevel2Spell() override {
+        spell2 = new Imperio();
+    }
+
+    void buildLevel3Spell() override {
+        spell3 = new Avada_Kedavra();
+    }
+
+    Spells_level_1* getLevel1Spell() override {
+        return spell1;
+    }
+
+    Spells_level_2* getLevel2Spell() override {
+        return spell2;
+    }
+
+    Spells_level_3* getLevel3Spell() override {
+        return spell3;
+    }
+
+    ~UnforgivableSpellBuilder() {
+        delete spell1;
+        delete spell2;
+        delete spell3;
+    }
+};
+
+// Менеджер, использующий строитель для создания заклинаний
+class SpellDirector {
+public:
+    void createAttackSpells(SpellBuilder& builder) {
+        builder.buildLevel1Spell();
+        builder.buildLevel2Spell();
+        builder.buildLevel3Spell();
+    }
+
+    void createProtectionSpells(SpellBuilder& builder) {
+        builder.buildLevel1Spell();
+        builder.buildLevel2Spell();
+        builder.buildLevel3Spell();
+    }
+
+    void createCasualSpells(SpellBuilder& builder) {
+        builder.buildLevel1Spell();
+        builder.buildLevel2Spell();
+        builder.buildLevel3Spell();
+    }
+
+    void createUnforgivableSpells(SpellBuilder& builder) {
+        builder.buildLevel1Spell();
+        builder.buildLevel2Spell();
+        builder.buildLevel3Spell();
+    }
+};
+
+
 
 int main()
 {
-	// Показываю, что создать одно и тоже заклинание можно только один раз  
+	SpellDirector director;
 
-	Attack_Spells spell1lvl1;
-	std::cout << spell1lvl1.WriteSpell1()->cast_level_1() << std::endl;
-	std::cout << spell1lvl1.WriteSpell1()->cast_level_1() << std::endl;
+    AttackSpellBuilder attackBuilder;
+    director.createAttackSpells(attackBuilder);
+    std::cout << attackBuilder.getLevel1Spell()->cast_level_1() << std::endl;
+    std::cout << attackBuilder.getLevel2Spell()->cast_level_2() << std::endl;
+    std::cout << attackBuilder.getLevel3Spell()->cast_level_3() << std::endl;
 
-	Protection_Spells spell2lvl1;
-	std::cout << spell2lvl1.WriteSpell1()->cast_level_1() << std::endl;
-	std::cout << spell2lvl1.WriteSpell1()->cast_level_1() << std::endl;
+    ProtectionSpellBuilder protectionBuilder;
+    director.createProtectionSpells(protectionBuilder);
+    std::cout << protectionBuilder.getLevel1Spell()->cast_level_1() << std::endl;
+    std::cout << protectionBuilder.getLevel2Spell()->cast_level_2() << std::endl;
+    std::cout << protectionBuilder.getLevel3Spell()->cast_level_3() << std::endl;
 
-	Casual_Spells spell3lvl1;
-	std::cout << spell3lvl1.WriteSpell1()->cast_level_1() << std::endl;
-	std::cout << spell3lvl1.WriteSpell1()->cast_level_1() << std::endl;
+    CasualSpellBuilder casualBuilder;
+    director.createCasualSpells(casualBuilder);
+    std::cout << casualBuilder.getLevel1Spell()->cast_level_1() << std::endl;
+    std::cout << casualBuilder.getLevel2Spell()->cast_level_2() << std::endl;
+    std::cout << casualBuilder.getLevel3Spell()->cast_level_3() << std::endl;
 
-	Unforgivable_Spells spell4lvl1;
-	std::cout << spell4lvl1.WriteSpell1()->cast_level_1() << std::endl;
-	std::cout << spell4lvl1.WriteSpell1()->cast_level_1() << std::endl;
+    UnforgivableSpellBuilder unforgivableBuilder;
+    director.createUnforgivableSpells(unforgivableBuilder);
+    std::cout << unforgivableBuilder.getLevel1Spell()->cast_level_1() << std::endl;
+    std::cout << unforgivableBuilder.getLevel2Spell()->cast_level_2() << std::endl;
+    std::cout << unforgivableBuilder.getLevel3Spell()->cast_level_3() << std::endl;
 
-	Attack_Spells spell1lvl2;
-	std::cout << spell1lvl2.WriteSpell2()->cast_level_2() << std::endl;
-	std::cout << spell1lvl2.WriteSpell2()->cast_level_2() << std::endl;
-
-	Protection_Spells spell2lvl2;
-	std::cout << spell2lvl2.WriteSpell2()->cast_level_2() << std::endl;
-	std::cout << spell2lvl2.WriteSpell2()->cast_level_2() << std::endl;
-
-	Casual_Spells spell3lvl2;
-	std::cout << spell3lvl2.WriteSpell2()->cast_level_2() << std::endl;
-	std::cout << spell3lvl2.WriteSpell2()->cast_level_2() << std::endl;
-
-	Unforgivable_Spells spell4lvl2;
-	std::cout << spell4lvl2.WriteSpell2()->cast_level_2() << std::endl;
-	std::cout << spell4lvl2.WriteSpell2()->cast_level_2() << std::endl;
-
-	Attack_Spells spell1lvl3;
-	std::cout << spell1lvl3.WriteSpell3()->cast_level_3() << std::endl;
-	std::cout << spell1lvl3.WriteSpell3()->cast_level_3() << std::endl;
-
-	Protection_Spells spell2lvl3;
-	std::cout << spell2lvl3.WriteSpell3()->cast_level_3() << std::endl;
-	std::cout << spell2lvl3.WriteSpell3()->cast_level_3() << std::endl;
-
-	Casual_Spells spell3lvl3;
-	std::cout << spell3lvl3.WriteSpell3()->cast_level_3() << std::endl;
-	std::cout << spell3lvl3.WriteSpell3()->cast_level_3() << std::endl;
-
-	Unforgivable_Spells spell4lvl3;
-	std::cout << spell4lvl3.WriteSpell3()->cast_level_3() << std::endl;
-	std::cout << spell4lvl3.WriteSpell3()->cast_level_3() << std::endl;
-
-	Attack_Spells spell1lvl4;
-	std::cout << spell1lvl4.WriteSpell4()->cast_level_4() << std::endl;
-	std::cout << spell1lvl4.WriteSpell4()->cast_level_4() << std::endl;
-
-	Protection_Spells spell2lvl4;
-	std::cout << spell2lvl4.WriteSpell4()->cast_level_4() << std::endl;
-	std::cout << spell2lvl4.WriteSpell4()->cast_level_4() << std::endl;
-
-	Casual_Spells spell3lvl4;
-	std::cout << spell3lvl4.WriteSpell4()->cast_level_4() << std::endl;
-	std::cout << spell3lvl4.WriteSpell4()->cast_level_4() << std::endl;
-
-	Unforgivable_Spells spell4lvl4;
-	std::cout << spell4lvl4.WriteSpell4()->cast_level_4() << std::endl;
-	std::cout << spell4lvl4.WriteSpell4()->cast_level_4() << std::endl;
+    return 0;
 }
