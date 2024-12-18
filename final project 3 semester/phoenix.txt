@@ -1,0 +1,4 @@
+Wizard 100 3 Expelliarmus Protego Wingardium_Leviosa
+Centaur 120 25
+Wizard 80 2 Lumos Nox
+Centaur 150 30

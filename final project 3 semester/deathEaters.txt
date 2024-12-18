@@ -1,0 +1,4 @@
+Wizard 90 2 Crucio Imperio
+Giant 200 40
+Wizard 110 4 Expelliarmus Protego Bombarda Lumos
+Giant 180 35
